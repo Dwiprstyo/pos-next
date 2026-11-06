@@ -1,8 +1,3 @@
--- ============================================================
--- Functions, triggers & RPCs
--- ============================================================
-
--- ── JWT claim helpers (driven by custom_access_token_hook) ──
 create or replace function public.jwt_app_role()
 returns text language sql stable as $$
   select coalesce(auth.jwt() ->> 'app_role', '')
@@ -23,7 +18,6 @@ returns boolean language sql stable as $$
   select coalesce((auth.jwt() ->> 'is_multi_outlet')::boolean, false)
 $$;
 
--- ── Auth hook: inject app_role / outlet_id / staff_id into JWT ──
 create or replace function public.custom_access_token_hook(event jsonb)
 returns jsonb
 language plpgsql
@@ -60,7 +54,6 @@ begin
 end;
 $$;
 
--- ── Audit helper (internal) ────────────────────────────────
 create or replace function public._audit(
   p_staff_id uuid,
   p_outlet_id uuid,
@@ -77,7 +70,6 @@ as $$
   values (p_staff_id, p_outlet_id, p_action, p_entity_type, p_entity_id, p_metadata);
 $$;
 
--- ── Denormalize order_items (outlet, menu snapshot, station) ─
 create or replace function public.fill_order_item_denorm()
 returns trigger
 language plpgsql
@@ -107,7 +99,6 @@ create trigger trg_fill_order_item_denorm
 before insert on public.order_items
 for each row execute function public.fill_order_item_denorm();
 
--- ── Recompute totals (tax + service charge) ────────────────
 create or replace function public.recompute_order_totals(p_order_id uuid)
 returns void
 language sql
@@ -125,7 +116,6 @@ as $$
      and ot.id = o.outlet_id;
 $$;
 
--- ── Stock deduction / restock on payment status change ─────
 create or replace function public.deduct_stock_on_payment()
 returns trigger
 language plpgsql
@@ -175,7 +165,6 @@ create trigger trg_deduct_stock
 after update on public.orders
 for each row execute function public.deduct_stock_on_payment();
 
--- ── Realtime broadcast: minimal KDS payload (no prices) ────
 create or replace function public.broadcast_order_item_change()
 returns trigger
 language plpgsql
@@ -253,7 +242,6 @@ create trigger trg_broadcast_order
 after insert or update on public.orders
 for each row execute function public.broadcast_order_change();
 
--- ── create_order: atomic, server-priced, idempotent ────────
 create or replace function public.create_order(
   p_client_id uuid,
   p_table_id uuid,
@@ -422,7 +410,6 @@ begin
 end;
 $$;
 
--- ── add items to an existing open order (same table session) ─
 create or replace function public.add_order_items(
   p_order_id uuid,
   p_items jsonb
@@ -516,7 +503,6 @@ begin
 end;
 $$;
 
--- ── Discount (internal, supports PIN-approved override) ────
 create or replace function public.apply_order_discount(
   p_order_id uuid,
   p_type text,
@@ -607,7 +593,6 @@ as $$
   select public.apply_order_discount(p_order_id, p_type, p_value, null::uuid);
 $$;
 
--- ── Payment (atomic, idempotent) ───────────────────────────
 create or replace function public.pay_order(
   p_order_id uuid,
   p_payments jsonb,
@@ -695,7 +680,6 @@ begin
 end;
 $$;
 
--- ── Void (internal, supports PIN-approved override) ────────
 create or replace function public.void_order(
   p_order_id uuid,
   p_reason text,
@@ -760,7 +744,6 @@ as $$
   select public.void_order(p_order_id, p_reason, null::uuid);
 $$;
 
--- ── KDS state machine (server-authoritative) ───────────────
 create or replace function public.set_kitchen_status(
   p_order_item_id uuid,
   p_new_status public.kitchen_status
@@ -824,7 +807,6 @@ begin
 end;
 $$;
 
--- ── Shifts ─────────────────────────────────────────────────
 create or replace function public.open_shift(p_opening_cash numeric)
 returns public.shifts
 language plpgsql
@@ -911,7 +893,6 @@ begin
 end;
 $$;
 
--- ── Manual stock adjustment ────────────────────────────────
 create or replace function public.adjust_stock(
   p_ingredient_id uuid,
   p_qty_change numeric,

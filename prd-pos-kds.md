@@ -20,7 +20,7 @@ Multi-outlet POS + Kitchen Display System. Realtime order sync FOH→KDS, role-b
 | Offline resiliency | IndexedDB queue (Dexie) untuk POS saat koneksi putus, sync on reconnect | Kasir tidak boleh blocking saat outage |
 | Styling | Tailwind CSS v4 + shadcn/ui (headless components di atas Radix) | Utility-first, konsisten dgn RSC, no CSS-in-JS runtime overhead |
 | Payment gateway | Abstraction layer (Strategy pattern) → QRIS/e-wallet provider adapter | Ganti provider tanpa ubah core |
-| Deployment | Vercel (app) + Supabase hosted | — |
+| Deployment | Vercel (app) + Supabase hosted | - |
 
 ---
 
@@ -40,7 +40,7 @@ RLS akan enforce ini di level row, **bukan** hanya di UI.
 
 ---
 
-## 4. Auth Design — PIN Login (bukan default Supabase email/pass flow)
+## 4. Auth Design: PIN Login (bukan default Supabase email/pass flow)
 
 Supabase Auth tidak native support "outlet + PIN". Desain:
 
@@ -51,10 +51,10 @@ Supabase Auth tidak native support "outlet + PIN". Desain:
    - Server Action / Edge Function `POST /auth/pin-login`:
      - Lookup `staff` by `staff_code + outlet_id`.
      - Verify `pin_hash` (argon2.verify).
-     - Rate-limit + lockout (5x gagal → lock 15 menit) — simpan counter di `staff.failed_pin_attempts` + `locked_until`.
+     - Rate-limit + lockout (5x gagal → lock 15 menit): simpan counter di `staff.failed_pin_attempts` + `locked_until`.
      - Jika valid: panggil Supabase Admin API `generateLink` (type `magiclink`) **atau** sign JWT custom dengan `service_role` key yang match struktur `auth.jwt()`, set sebagai session cookie via `@supabase/ssr`.
-   - Custom claims (`role`, `outlet_id`, `staff_id`) di-inject via **Auth Hook** (`custom_access_token_hook`) supaya kebaca di `auth.jwt()` untuk RLS — tidak perlu extra query di setiap policy.
-4. Session pendek (shift-length, e.g. 12 jam) — auto logout saat shift ditutup.
+   - Custom claims (`role`, `outlet_id`, `staff_id`) di-inject via **Auth Hook** (`custom_access_token_hook`) supaya kebaca di `auth.jwt()` untuk RLS; tidak perlu extra query di setiap policy.
+4. Session pendek (shift-length, e.g. 12 jam), auto logout saat shift ditutup.
 
 ```sql
 -- Auth Hook (Postgres function, registered di Supabase Dashboard > Auth > Hooks)
@@ -85,7 +85,6 @@ $$;
 ## 5. Database Schema
 
 ```sql
--- ── Outlets ─────────────────────────────
 create table outlets (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -95,7 +94,6 @@ create table outlets (
   created_at timestamptz default now()
 );
 
--- ── Staff ───────────────────────────────
 create type staff_role as enum ('cashier','kitchen','manager');
 
 create table staff (
@@ -114,7 +112,6 @@ create table staff (
   unique(outlet_id, staff_code)
 );
 
--- ── Shifts ──────────────────────────────
 create table shifts (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid references outlets(id) not null,
@@ -127,7 +124,6 @@ create table shifts (
   closed_at timestamptz
 );
 
--- ── Tables (dine-in) ────────────────────
 create type table_status as enum ('empty','occupied','unpaid');
 
 create table dining_tables (
@@ -139,7 +135,6 @@ create table dining_tables (
   unique(outlet_id, label)
 );
 
--- ── Menu ────────────────────────────────
 create table menu_categories (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid references outlets(id) not null,
@@ -158,7 +153,7 @@ create table menu_items (
   created_at timestamptz default now()
 );
 
--- variant group, e.g. "Level Pedas", "Suhu" — bisa required/single-select atau multi
+-- variant group, e.g. "Level Pedas", "Suhu"; bisa required/single-select atau multi
 create table variant_groups (
   id uuid primary key default gen_random_uuid(),
   menu_item_id uuid references menu_items(id) not null,
@@ -175,7 +170,6 @@ create table variant_options (
   extra_price numeric(12,2) default 0
 );
 
--- ── Stock / Ingredients ─────────────────
 create table ingredients (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid references outlets(id) not null,
@@ -193,7 +187,6 @@ create table menu_item_ingredients (
   primary key (menu_item_id, ingredient_id)
 );
 
--- ── Orders ──────────────────────────────
 create type order_type as enum ('dine_in','takeaway');
 create type order_status as enum ('open','paid','void');
 create type kitchen_status as enum ('new','cooking','ready','served');
@@ -238,7 +231,6 @@ create table order_item_variants (
   primary key (order_item_id, variant_option_id)
 );
 
--- ── Payments ────────────────────────────
 create type payment_method as enum ('cash','qris','card','ewallet');
 
 create table payments (
@@ -251,7 +243,6 @@ create table payments (
   paid_at timestamptz default now()
 );
 
--- ── Stock Transaction (audit deduction) ─
 create table stock_transactions (
   id uuid primary key default gen_random_uuid(),
   ingredient_id uuid references ingredients(id) not null,
@@ -261,7 +252,6 @@ create table stock_transactions (
   created_at timestamptz default now()
 );
 
--- ── Audit Log (generic) ─────────────────
 create table audit_logs (
   id uuid primary key default gen_random_uuid(),
   staff_id uuid references staff(id),
@@ -333,13 +323,13 @@ for update using (
 -- kolom sensitif (price) diproteksi via view terpisah untuk KDS, bukan expose order_items mentah dgn unit_price
 ```
 
-**Penting**: KDS board query lewat **view** `kds_order_items_view` yang exclude `unit_price`, `total`, join ke `orders` tanpa expose payment info — defense in depth, jangan andalkan RLS kolom saja (Postgres RLS itu row-level, bukan column-level; pakai view + `security_invoker` atau revoke column grants).
+**Penting**: KDS board query lewat **view** `kds_order_items_view` yang exclude `unit_price`, `total`, join ke `orders` tanpa expose payment info; defense in depth, jangan andalkan RLS kolom saja (Postgres RLS itu row-level, bukan column-level; pakai view + `security_invoker` atau revoke column grants).
 
 ---
 
 ## 7. Realtime Architecture (KDS)
 
-- Client KDS subscribe ke Postgres Changes: `postgres_changes` event on `order_items` filter `outlet_id=eq.<id>` (via join broadcast dari `orders`, atau denormalize `outlet_id` langsung ke `order_items` untuk filter murah — **rekomendasi: denormalize**, hindari join di realtime filter).
+- Client KDS subscribe ke Postgres Changes: `postgres_changes` event on `order_items` filter `outlet_id=eq.<id>` (via join broadcast dari `orders`, atau denormalize `outlet_id` langsung ke `order_items` untuk filter murah; **rekomendasi: denormalize**, hindari join di realtime filter).
 - Channel per outlet: `realtime:kds:{outlet_id}`.
 - Payload minimal (item id, menu name, qty, notes, status, table label) → gunakan Postgres `supabase_realtime` publication dengan kolom terbatas via trigger yang broadcast custom payload (`realtime.broadcast_changes`) alih-alih raw table replication, supaya tidak leak price.
 - Fallback: polling 5s jika WS disconnect (resilience untuk jaringan dapur yang kadang unstable).
@@ -350,27 +340,27 @@ for update using (
 ## 8. Modul & Halaman
 
 ### 8.1 POS (Kasir)
-- `/pos` — grid menu by category, cart panel (Zustand), variant modal.
-- `/pos/tables` — floor plan grid, status color-coded (empty/occupied/unpaid), tap → assign order.
-- `/pos/checkout` — summary, diskon (%/nominal, butuh manager approval jika > threshold via PIN override), pajak auto (config per outlet), pilih metode bayar.
-- `/pos/shift` — open (input cash float) / close (expected vs actual, variance report).
+- `/pos`: grid menu by category, cart panel (Zustand), variant modal.
+- `/pos/tables`: floor plan grid, status color-coded (empty/occupied/unpaid), tap → assign order.
+- `/pos/checkout`: summary, diskon (%/nominal, butuh manager approval jika > threshold via PIN override), pajak auto (config per outlet), pilih metode bayar.
+- `/pos/shift`: open (input cash float) / close (expected vs actual, variance report).
 
 ### 8.2 KDS
-- `/kds` — kanban 3 kolom (New / Cooking / Ready), realtime push, big-touch buttons, filter by station (opsional: kitchen/bar split via `menu_categories.station`).
+- `/kds`: kanban 3 kolom (New / Cooking / Ready), realtime push, big-touch buttons, filter by station (opsional: kitchen/bar split via `menu_categories.station`).
 - Audio/visual alert untuk order baru masuk.
 
 ### 8.2.1 UI Conventions (Tailwind)
-- Design tokens via `tailwind.config` theme extend: `color.status.empty/occupied/unpaid`, `color.kitchen.new/cooking/ready` — dipakai konsisten di floor plan & kanban KDS.
+- Design tokens via `tailwind.config` theme extend: `color.status.empty/occupied/unpaid`, `color.kitchen.new/cooking/ready`; dipakai konsisten di floor plan & kanban KDS.
 - KDS kanban card: min touch target 44px, `text-2xl`+ untuk item name (dibaca dari jarak), `animate-pulse` pada card baru masuk sampai di-ack.
-- Dark mode (`dark:`) default ON untuk KDS (kontras tinggi di lingkungan dapur), light mode default untuk POS/back office — toggle via `next-themes`.
+- Dark mode (`dark:`) default ON untuk KDS (kontras tinggi di lingkungan dapur), light mode default untuk POS/back office; toggle via `next-themes`.
 - Semua komponen interaktif (button, modal, kanban card) pakai shadcn/ui primitives + Tailwind, no custom CSS files kecuali global reset.
 
 ### 8.3 Back Office (Manager)
-- `/admin/menu` — CRUD menu, variant groups, resep (ingredient mapping).
-- `/admin/stock` — current stock, manual adjustment, low-stock alert.
-- `/admin/reports` — omzet harian/bulanan (materialized view `daily_sales_summary`, refresh via cron/Edge Function), top-selling items, per-outlet breakdown.
-- `/admin/staff` — CRUD staff, reset PIN, role assignment.
-- `/admin/outlets` — outlet management (owner only).
+- `/admin/menu`: CRUD menu, variant groups, resep (ingredient mapping).
+- `/admin/stock`: current stock, manual adjustment, low-stock alert.
+- `/admin/reports`: omzet harian/bulanan (materialized view `daily_sales_summary`, refresh via cron/Edge Function), top-selling items, per-outlet breakdown.
+- `/admin/staff`: CRUD staff, reset PIN, role assignment.
+- `/admin/outlets`: outlet management (owner only).
 
 ---
 

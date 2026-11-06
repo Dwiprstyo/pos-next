@@ -119,7 +119,7 @@ export function StockClient({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold">Stok — {outletName}</h1>
+          <h1 className="text-lg font-semibold">Stok: {outletName}</h1>
           <p className="text-sm text-muted-foreground">Stok terpotong otomatis saat pesanan dibayar.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -129,7 +129,7 @@ export function StockClient({
               onValueChange={(value) => router.push(`/admin/stock?outlet=${value ?? ""}`)}
               items={outlets.map((outlet) => ({ value: outlet.id, label: outlet.name }))}
             >
-              <SelectTrigger className="w-52">
+              <SelectTrigger className="w-52" aria-label="Pilih outlet">
                 <SelectValue placeholder="Pilih outlet" />
               </SelectTrigger>
               <SelectContent>
@@ -248,7 +248,7 @@ export function StockClient({
                   </TableCell>
                   <TableCell>{transaction.ingredients?.name ?? "-"}</TableCell>
                   <TableCell
-                    className={Number(transaction.qty_change) < 0 ? "text-destructive" : "text-status-empty"}
+                    className={Number(transaction.qty_change) < 0 ? "text-destructive" : "text-foreground"}
                   >
                     {Number(transaction.qty_change) > 0 ? "+" : ""}
                     {numberID(transaction.qty_change)} {transaction.ingredients?.unit ?? ""}
@@ -272,13 +272,14 @@ export function StockClient({
         <DialogContent>
           <DialogHeader>
             <DialogTitle>
-              {adjust?.mode === "in" ? "Stok Masuk" : "Stok Keluar"} — {adjust?.ingredient.name}
+              {adjust?.mode === "in" ? "Stok Masuk" : "Stok Keluar"}: {adjust?.ingredient.name}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label>Jumlah ({adjust?.ingredient.unit})</Label>
+              <Label htmlFor="stock-adjust-qty">Jumlah ({adjust?.ingredient.unit})</Label>
               <Input
+                id="stock-adjust-qty"
                 type="number"
                 min={0}
                 value={adjust?.qty ?? ""}
@@ -286,8 +287,9 @@ export function StockClient({
               />
             </div>
             <div className="space-y-1">
-              <Label>Alasan</Label>
+              <Label htmlFor="stock-adjust-reason">Alasan</Label>
               <Input
+                id="stock-adjust-reason"
                 value={adjust?.reason ?? ""}
                 onChange={(event) => setAdjust((prev) => (prev ? { ...prev, reason: event.target.value } : prev))}
               />
@@ -311,20 +313,21 @@ export function StockClient({
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label>Nama</Label>
+              <Label htmlFor="ingredient-name">Nama</Label>
               <Input
+                id="ingredient-name"
                 value={form?.name ?? ""}
                 onChange={(event) => setForm((prev) => (prev ? { ...prev, name: event.target.value } : prev))}
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>Satuan</Label>
+                <Label htmlFor="ingredient-unit">Satuan</Label>
                 <Select
                   value={form?.unit ?? "gram"}
                   onValueChange={(value) => setForm((prev) => (prev ? { ...prev, unit: value ?? "gram" } : prev))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="ingredient-unit">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -337,8 +340,9 @@ export function StockClient({
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label>Min. Alert</Label>
+                <Label htmlFor="ingredient-min-alert">Min. Alert</Label>
                 <Input
+                  id="ingredient-min-alert"
                   type="number"
                   value={form?.minStockAlert ?? "0"}
                   onChange={(event) =>
@@ -349,8 +353,9 @@ export function StockClient({
             </div>
             {!form?.id ? (
               <div className="space-y-1">
-                <Label>Stok Awal</Label>
+                <Label htmlFor="ingredient-initial-stock">Stok Awal</Label>
                 <Input
+                  id="ingredient-initial-stock"
                   type="number"
                   value={form?.initialStock ?? "0"}
                   onChange={(event) =>

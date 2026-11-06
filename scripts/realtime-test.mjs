@@ -50,7 +50,7 @@ try {
   await page.goto(`${BASE}/login`);
   await page.getByRole("combobox").click();
   await page.waitForSelector('[role="option"]');
-  await page.getByRole("option", { name: "Warung Nusantara — Pusat" }).click();
+  await page.getByRole("option", { name: /Warung Nusantara.+Pusat/ }).click();
   await page.getByLabel("Kode Staff").fill("DAP");
   await page.getByLabel("PIN").fill("5555");
   await page.getByRole("button", { name: "Masuk", exact: true }).click();

@@ -5,13 +5,13 @@ Halaman: `/pos`, `/pos/orders`, `/pos/tables`, `/pos/checkout`, `/pos/shift`.
 ## Alur harian kasir
 
 1. **Login** (PIN) → otomatis diarahkan ke POS.
-2. **Buka shift** (`/pos/shift`) — isi kas awal (ada tombol preset 100rb/200rb/500rb/1jt). Tanpa shift terbuka, semua pembuatan order ditolak (`no_open_shift`).
+2. **Buka shift** (`/pos/shift`): isi kas awal (ada tombol preset 100rb/200rb/500rb/1jt). Tanpa shift terbuka, semua pembuatan order ditolak (`no_open_shift`).
 3. **Pilih tipe order**: Dine-in atau Takeaway.
-4. **Pilih meja** — **opsional**. Bisa "Tanpa meja" untuk counter/queue.
+4. **Pilih meja** (opsional): bisa "Tanpa meja" untuk counter/queue.
 5. **Tambah menu** dari grid (cari + filter kategori). Item dengan varian membuka dialog pilihan (wajib/min/maks divalidasi server).
 6. **Kirim ke Dapur** → order dibuat, tampil di KDS.
 7. **Bayar** → halaman checkout: diskon (opsional), metode pembayaran, lalu bayar.
-8. **Tutup shift** di akhir — kas aktual dihitung, variance otomatis, sesi logout.
+8. **Tutup shift** di akhir: kas aktual dihitung, variance otomatis, sesi logout.
 
 ## Pesanan Berjalan (`/pos/orders`)
 

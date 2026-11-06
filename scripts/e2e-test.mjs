@@ -48,7 +48,7 @@ page.on("pageerror", (error) => consoleErrors.push(error.message));
 
 try {
   console.log("1. Cashier opens shift");
-  await login(page, { outlet: "Warung Nusantara — Pusat", staffCode: "KSR1", pin: "3333" });
+  await login(page, { outlet: /Warung Nusantara.+Pusat/, staffCode: "KSR1", pin: "3333" });
   await page.goto(`${BASE}/pos/shift`);
   await page.waitForSelector("text=Buka Shift", { timeout: 15000 });
   check("cashier sees shift page", page.url().includes("/pos/shift"));
@@ -113,7 +113,7 @@ try {
   await logout(page);
 
   console.log("4. Kitchen KDS realtime board");
-  await login(page, { outlet: "Warung Nusantara — Pusat", staffCode: "DAP", pin: "5555" });
+  await login(page, { outlet: /Warung Nusantara.+Pusat/, staffCode: "DAP", pin: "5555" });
   await page.waitForURL(/\/kds/, { timeout: 15000 });
   check("kitchen landed on KDS", page.url().includes("/kds"));
   await page.waitForSelector("text=Baru", { timeout: 15000 });
@@ -149,7 +149,7 @@ try {
   await logout(page);
 
   console.log("5. Manager reports");
-  await login(page, { outlet: "Warung Nusantara — Pusat", staffCode: "MGR", pin: "2222" });
+  await login(page, { outlet: /Warung Nusantara.+Pusat/, staffCode: "MGR", pin: "2222" });
   await page.waitForURL(/\/admin\/reports/, { timeout: 15000 });
   check("manager landed on reports", page.url().includes("/admin/reports"));
   await page.waitForSelector("text=Omzet Harian", { timeout: 15000 });
@@ -171,7 +171,7 @@ try {
   await logout(page);
 
   console.log("6. Owner login sees all outlets");
-  await login(page, { outlet: "Warung Nusantara — Pusat", staffCode: "OWN", pin: "1111" });
+  await login(page, { outlet: /Warung Nusantara.+Pusat/, staffCode: "OWN", pin: "1111" });
   await page.waitForURL(/\/admin\/reports/, { timeout: 15000 });
   check("owner landed on reports", page.url().includes("/admin/reports"));
   await page.waitForSelector("text=Omzet Harian", { timeout: 15000 });

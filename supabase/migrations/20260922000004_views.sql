@@ -1,7 +1,3 @@
--- ============================================================
--- Views & reporting
--- ============================================================
-
 -- KDS board: price-free projection. Definer view so the kitchen role
 -- never needs SELECT on orders/order_items/payments.
 create or replace view public.kds_order_items_view
@@ -36,7 +32,6 @@ where o.status <> 'void'
 
 grant select on public.kds_order_items_view to authenticated;
 
--- ── Daily sales summary (materialized) ─────────────────────
 create materialized view public.daily_sales_summary as
 select
   o.outlet_id,
@@ -81,7 +76,6 @@ begin
 end;
 $$;
 
--- ── Sales report access (manager/owner only) ───────────────
 create or replace function public.daily_sales(
   p_from date,
   p_to date,
@@ -171,7 +165,6 @@ begin
 end;
 $$;
 
--- ── Shift reconciliation helper ────────────────────────────
 create or replace function public.shift_summary(p_shift_id uuid)
 returns table (
   opening_cash numeric,

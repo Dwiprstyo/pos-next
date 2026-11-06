@@ -1,8 +1,3 @@
--- ============================================================
--- POS & KDS — Core schema
--- ============================================================
-
--- ── Outlets ────────────────────────────────────────────────
 create table public.outlets (
   id uuid primary key default gen_random_uuid(),
   name text not null,
@@ -15,7 +10,6 @@ create table public.outlets (
   created_at timestamptz not null default now()
 );
 
--- ── Staff ──────────────────────────────────────────────────
 create type public.staff_role as enum ('cashier','kitchen','manager');
 
 create table public.staff (
@@ -37,7 +31,6 @@ create table public.staff (
 create unique index staff_outlet_code_uniq on public.staff (outlet_id, staff_code);
 create unique index staff_global_code_uniq on public.staff (staff_code) where outlet_id is null;
 
--- ── Shifts ─────────────────────────────────────────────────
 create table public.shifts (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid not null references public.outlets(id) on delete restrict,
@@ -52,7 +45,6 @@ create table public.shifts (
 
 create unique index shifts_one_open_per_staff on public.shifts (staff_id) where closed_at is null;
 
--- ── Dining tables ──────────────────────────────────────────
 create type public.table_status as enum ('empty','occupied','unpaid');
 
 create table public.dining_tables (
@@ -64,7 +56,6 @@ create table public.dining_tables (
   unique (outlet_id, label)
 );
 
--- ── Menu ───────────────────────────────────────────────────
 create table public.menu_categories (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid not null references public.outlets(id) on delete cascade,
@@ -102,7 +93,6 @@ create table public.variant_options (
   extra_price numeric(12,2) not null default 0
 );
 
--- ── Stock / Ingredients ────────────────────────────────────
 create table public.ingredients (
   id uuid primary key default gen_random_uuid(),
   outlet_id uuid not null references public.outlets(id) on delete cascade,
@@ -121,7 +111,6 @@ create table public.menu_item_ingredients (
   primary key (menu_item_id, ingredient_id)
 );
 
--- ── Orders ─────────────────────────────────────────────────
 create type public.order_type as enum ('dine_in','takeaway');
 create type public.order_status as enum ('open','paid','void');
 create type public.kitchen_status as enum ('new','cooking','ready','served');
@@ -186,7 +175,6 @@ create table public.order_item_variants (
   primary key (order_item_id, variant_option_id)
 );
 
--- ── Payments ───────────────────────────────────────────────
 create type public.payment_method as enum ('cash','qris','card','ewallet');
 
 create table public.payments (
@@ -204,7 +192,6 @@ create unique index payments_reference_no_uniq on public.payments (reference_no)
 create unique index payments_idempotency_key_uniq on public.payments (idempotency_key) where idempotency_key is not null;
 create index payments_order_idx on public.payments (order_id);
 
--- ── Stock transactions (audit trail) ───────────────────────
 create table public.stock_transactions (
   id uuid primary key default gen_random_uuid(),
   ingredient_id uuid not null references public.ingredients(id) on delete restrict,
@@ -218,7 +205,6 @@ create table public.stock_transactions (
 create index stock_transactions_ingredient_idx on public.stock_transactions (ingredient_id, created_at desc);
 create index stock_transactions_order_idx on public.stock_transactions (order_id);
 
--- ── Audit log (append-only) ────────────────────────────────
 create table public.audit_logs (
   id uuid primary key default gen_random_uuid(),
   staff_id uuid references public.staff(id) on delete set null,

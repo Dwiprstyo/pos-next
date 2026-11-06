@@ -1,7 +1,3 @@
--- ============================================================
--- Row Level Security — outlet isolation, role enforcement
--- ============================================================
-
 create or replace function public.can_access_outlet(p_outlet_id uuid)
 returns boolean
 language sql
@@ -27,7 +23,6 @@ as $$
   select public.jwt_app_role() in ('cashier','manager')
 $$;
 
--- ── outlets ────────────────────────────────────────────────
 alter table public.outlets enable row level security;
 
 create policy outlets_select on public.outlets
@@ -39,7 +34,6 @@ for all to authenticated
 using (public.jwt_is_multi_outlet())
 with check (public.jwt_is_multi_outlet());
 
--- ── staff ──────────────────────────────────────────────────
 alter table public.staff enable row level security;
 
 create policy staff_select on public.staff
@@ -62,7 +56,6 @@ using (public.jwt_is_multi_outlet());
 -- pin material must never be readable by API clients (service_role keeps access)
 revoke select (pin_hash, failed_pin_attempts, locked_until) on public.staff from anon, authenticated;
 
--- ── shifts ─────────────────────────────────────────────────
 alter table public.shifts enable row level security;
 
 create policy shifts_select on public.shifts
@@ -74,7 +67,6 @@ using (
 
 -- writes only via RPC (security definer)
 
--- ── dining_tables ──────────────────────────────────────────
 alter table public.dining_tables enable row level security;
 
 create policy dining_tables_select on public.dining_tables
@@ -86,7 +78,6 @@ for all to authenticated
 using (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()))
 with check (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()));
 
--- ── menu_categories ────────────────────────────────────────
 alter table public.menu_categories enable row level security;
 
 create policy menu_categories_select on public.menu_categories
@@ -98,7 +89,6 @@ for all to authenticated
 using (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()))
 with check (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()));
 
--- ── menu_items ─────────────────────────────────────────────
 alter table public.menu_items enable row level security;
 
 create policy menu_items_select on public.menu_items
@@ -110,7 +100,6 @@ for all to authenticated
 using (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()))
 with check (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()));
 
--- ── variant_groups ─────────────────────────────────────────
 alter table public.variant_groups enable row level security;
 
 create policy variant_groups_select on public.variant_groups
@@ -140,7 +129,6 @@ with check (
   )
 );
 
--- ── variant_options ────────────────────────────────────────
 alter table public.variant_options enable row level security;
 
 create policy variant_options_select on public.variant_options
@@ -173,7 +161,6 @@ with check (
   )
 );
 
--- ── ingredients ────────────────────────────────────────────
 alter table public.ingredients enable row level security;
 
 create policy ingredients_select on public.ingredients
@@ -185,7 +172,6 @@ for all to authenticated
 using (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()))
 with check (public.is_manager() and (public.jwt_is_multi_outlet() or outlet_id = public.jwt_outlet_id()));
 
--- ── menu_item_ingredients ──────────────────────────────────
 alter table public.menu_item_ingredients enable row level security;
 
 create policy menu_item_ingredients_select on public.menu_item_ingredients
@@ -215,7 +201,6 @@ with check (
   )
 );
 
--- ── orders ─────────────────────────────────────────────────
 alter table public.orders enable row level security;
 
 create policy orders_select on public.orders
@@ -224,7 +209,6 @@ using (public.can_access_outlet(outlet_id) and public.is_cashier_or_manager());
 
 -- writes only via RPC (security definer)
 
--- ── order_items ────────────────────────────────────────────
 alter table public.order_items enable row level security;
 
 create policy order_items_select on public.order_items
@@ -233,7 +217,6 @@ using (public.can_access_outlet(outlet_id) and public.is_cashier_or_manager());
 
 -- writes only via RPC (security definer); kitchen updates through set_kitchen_status
 
--- ── order_item_variants ────────────────────────────────────
 alter table public.order_item_variants enable row level security;
 
 create policy order_item_variants_select on public.order_item_variants
@@ -246,7 +229,6 @@ using (
   )
 );
 
--- ── payments ───────────────────────────────────────────────
 alter table public.payments enable row level security;
 
 create policy payments_select on public.payments
@@ -261,7 +243,6 @@ using (
 
 -- writes only via RPC (security definer)
 
--- ── stock_transactions ─────────────────────────────────────
 alter table public.stock_transactions enable row level security;
 
 create policy stock_transactions_select on public.stock_transactions
@@ -276,7 +257,6 @@ using (
 
 -- writes only via RPC (security definer)
 
--- ── audit_logs (append-only) ───────────────────────────────
 alter table public.audit_logs enable row level security;
 
 create policy audit_logs_select on public.audit_logs

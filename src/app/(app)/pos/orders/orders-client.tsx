@@ -114,7 +114,7 @@ export function OrdersClient({ orders }: { orders: OpenOrder[] }) {
                         <span
                           className={cn(
                             "shrink-0 text-xs",
-                            item.kitchen_status === "served" ? "text-status-empty" : "text-muted-foreground",
+                            "text-muted-foreground",
                           )}
                         >
                           {KITCHEN_LABEL[item.kitchen_status]}

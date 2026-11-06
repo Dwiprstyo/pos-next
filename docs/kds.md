@@ -33,7 +33,7 @@ new → cooking → ready → served
 
 - Trigger `trg_broadcast_order_item` / `trg_broadcast_order` memanggil `realtime.send` ke topic privat `kds:{outlet_id}`.
 - Payload minimal (tanpa harga): `id`, `order_id`, `order_number`, `order_type`, `table_label`, `menu_name`, `qty`, `notes`, `station`, `kitchen_status`, `op`.
-- Client subscribe dengan `config: { private: true }` dan **JWT user** (`supabase.realtime.setAuth(session.access_token)`) — Realtime mengecek policy `realtime.messages` per outlet.
+- Client subscribe dengan `config: { private: true }` dan **JWT user** (`supabase.realtime.setAuth(session.access_token)`); Realtime mengecek policy `realtime.messages` per outlet.
 - Setelah event diterima, board memanggil server action `fetchKdsItems()` untuk mengambil data lengkap (termasuk varian).
 
 ## Fallback polling
@@ -48,7 +48,7 @@ Kalau websocket tidak `SUBSCRIBED` (jaringan dapur tidak stabil), board otomatis
 
 ## Tema
 
-Default aplikasi **light**; KDS punya tombol ganti tema (ikon bulan/matahari) di header. Banyak dapur lebih nyaman dark mode — sekali diubah, tersimpan di browser.
+Default aplikasi **light**; KDS punya tombol ganti tema (ikon bulan/matahari) di header. Banyak dapur lebih nyaman dark mode. Sekali diubah, pengaturannya tersimpan di browser.
 
 ## Station (kitchen/bar)
 

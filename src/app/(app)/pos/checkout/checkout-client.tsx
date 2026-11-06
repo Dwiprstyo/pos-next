@@ -345,7 +345,7 @@ export function CheckoutClient({
               onValueChange={(value) => setDiscountType((value ?? "percent") as "percent" | "nominal")}
               items={{ percent: "Persen (%)", nominal: "Nominal (Rp)" }}
             >
-              <SelectTrigger className="sm:w-40">
+              <SelectTrigger className="sm:w-40" aria-label="Tipe diskon">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -357,6 +357,7 @@ export function CheckoutClient({
               type="number"
               min={0}
               value={discountValue}
+              aria-label="Nilai diskon"
               onChange={(event) => setDiscountValue(event.target.value)}
               placeholder={discountType === "percent" ? "10" : "10000"}
             />
@@ -395,7 +396,7 @@ export function CheckoutClient({
 
           {!gatewayEnabled ? (
             <p className="text-xs text-muted-foreground">
-              Payment gateway (Midtrans) belum dikonfigurasi — hanya pembayaran tunai yang tersedia.
+              Payment gateway (Midtrans) belum dikonfigurasi. Hanya pembayaran tunai yang tersedia.
             </p>
           ) : null}
 
@@ -487,13 +488,17 @@ export function CheckoutClient({
             <DialogTitle>Approval Manager</DialogTitle>
             <DialogDescription>Masukkan PIN manager untuk menyetujui diskon ini.</DialogDescription>
           </DialogHeader>
-          <Input
-            type="password"
-            inputMode="numeric"
-            value={managerPin}
-            onChange={(event) => setManagerPin(event.target.value)}
-            placeholder="PIN manager"
-          />
+          <div className="space-y-1">
+            <Label htmlFor="manager-pin">PIN Manager</Label>
+            <Input
+              id="manager-pin"
+              type="password"
+              inputMode="numeric"
+              value={managerPin}
+              onChange={(event) => setManagerPin(event.target.value)}
+              placeholder="PIN manager"
+            />
+          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowApproval(false)}>
               Batal

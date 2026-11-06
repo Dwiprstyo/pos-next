@@ -223,14 +223,14 @@ export function PosClient({
         attempts: 0,
       });
       clear();
-      toast.warning("Koneksi terputus — pesanan disimpan offline dan akan disinkronkan otomatis.");
+      toast.warning("Koneksi terputus. Pesanan disimpan offline dan akan disinkronkan otomatis.");
     } finally {
       setSubmitting(false);
     }
   }
 
   return (
-    <div className="flex h-[calc(100svh-3.5rem)] flex-col lg:h-svh lg:flex-row">
+    <div className="flex h-[calc(100svh-4.25rem)] flex-col lg:h-svh lg:flex-row">
       <LandscapeHint className="lg:hidden" />
       <section className="flex min-h-0 flex-1 flex-col p-4">
         <div className="mb-3 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -240,6 +240,7 @@ export function PosClient({
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Cari menu..."
+              aria-label="Cari menu"
               className="pl-9"
             />
           </div>
@@ -268,11 +269,11 @@ export function PosClient({
                 { value: "none", label: "Tanpa meja (opsional)" },
                 ...tables.map((table) => ({
                   value: table.id,
-                  label: `${table.label} — ${table.status}`,
+                  label: `${table.label}: ${table.status}`,
                 })),
               ]}
             >
-              <SelectTrigger className="w-full sm:w-60">
+              <SelectTrigger className="w-full sm:w-60" aria-label="Pilih meja">
                 <SelectValue placeholder="Tanpa meja (opsional)" />
               </SelectTrigger>
               <SelectContent>
@@ -283,7 +284,7 @@ export function PosClient({
                     value={table.id}
                     disabled={table.status !== "empty" && table.current_order_id !== appendOrderId}
                   >
-                    {table.label} — {table.status}
+                    {table.label}: {table.status}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -367,8 +368,13 @@ export function PosClient({
                     ) : null}
                     <p className="text-xs text-muted-foreground">{rupiah(lineUnitPrice(line))}</p>
                   </div>
-                  <Button variant="ghost" size="icon" onClick={() => removeLine(line.key)}>
-                    <Trash2 className="size-4" />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label={`Hapus ${line.name}`}
+                    onClick={() => removeLine(line.key)}
+                  >
+                    <Trash2 className="size-4" aria-hidden="true" />
                   </Button>
                 </div>
                 <div className="mt-2 flex items-center justify-between">
@@ -376,19 +382,21 @@ export function PosClient({
                     <Button
                       variant="outline"
                       size="icon"
-                      className="size-10"
+                      className="size-11"
+                      aria-label={`Kurangi ${line.name}`}
                       onClick={() => updateQty(line.key, line.qty - 1)}
                     >
-                      <Minus className="size-4" />
+                      <Minus className="size-4" aria-hidden="true" />
                     </Button>
                     <span className="w-9 text-center text-base font-semibold">{line.qty}</span>
                     <Button
                       variant="outline"
                       size="icon"
-                      className="size-10"
+                      className="size-11"
+                      aria-label={`Tambah ${line.name}`}
                       onClick={() => updateQty(line.key, line.qty + 1)}
                     >
-                      <Plus className="size-4" />
+                      <Plus className="size-4" aria-hidden="true" />
                     </Button>
                   </div>
                   <span className="text-sm font-semibold">{rupiah(lineUnitPrice(line) * line.qty)}</span>
@@ -397,6 +405,7 @@ export function PosClient({
                   value={line.notes}
                   onChange={(event) => updateNotes(line.key, event.target.value)}
                   placeholder="Catatan dapur..."
+                  aria-label={`Catatan untuk ${line.name}`}
                   className="mt-2 h-10 text-sm"
                 />
               </div>
@@ -494,13 +503,19 @@ export function PosClient({
                 <Button
                   variant="outline"
                   size="icon"
+                  aria-label="Kurangi jumlah"
                   onClick={() => setVariantQty((qty) => Math.max(1, qty - 1))}
                 >
-                  <Minus className="size-4" />
+                  <Minus className="size-4" aria-hidden="true" />
                 </Button>
                 <span className="w-10 text-center font-medium">{variantQty}</span>
-                <Button variant="outline" size="icon" onClick={() => setVariantQty((qty) => qty + 1)}>
-                  <Plus className="size-4" />
+                <Button
+                  variant="outline"
+                  size="icon"
+                  aria-label="Tambah jumlah"
+                  onClick={() => setVariantQty((qty) => qty + 1)}
+                >
+                  <Plus className="size-4" aria-hidden="true" />
                 </Button>
               </div>
             </div>

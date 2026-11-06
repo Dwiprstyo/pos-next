@@ -11,6 +11,7 @@ Semua definisi ada di `supabase/migrations/`. Urutan migrasi:
 | 5 | `..._grants_realtime.sql` | Grant fungsi + policy `realtime.messages` |
 | 6 | `..._fixes_gateway.sql` | Fix `can_access_outlet` + `settle_gateway_payment` |
 | 7 | `..._owner_table_gateway.sql` | Fix hook owner, meja opsional, status pembayaran |
+| 8 | `..._kds_view_outlet.sql` | Tambah `outlet_id` di view KDS |
 
 ## Enum
 
@@ -97,9 +98,9 @@ Append-only: actor, outlet, `action`, `entity_type/id`, `metadata`.
 
 ## View & laporan
 
-- **`kds_order_items_view`** — definer view, hanya order non-void & item belum served; kolom: id, order, nomor, tipe, status, label meja, nama menu, qty, catatan, station, status dapur, varian (agregat), timestamp. **Tanpa harga.**
-- **`daily_sales_summary`** — materialized view: per outlet per tanggal, jumlah order, bruto, diskon, pajak, net, tunai, non-tunai. Refresh lewat `refresh_daily_sales_summary()`.
-- **`shift_summary`** — rekap kas per shift (tunai, non-tunai, expected).
+- **`kds_order_items_view`**: definer view, hanya order non-void & item belum served; kolom: id, order, nomor, tipe, status, label meja, nama menu, qty, catatan, station, status dapur, varian (agregat), timestamp. **Tanpa harga.**
+- **`daily_sales_summary`**: materialized view per outlet per tanggal, jumlah order, bruto, diskon, pajak, net, tunai, non-tunai. Refresh lewat `refresh_daily_sales_summary()`.
+- **`shift_summary`**: rekap kas per shift (tunai, non-tunai, expected).
 
 ## Indeks penting
 

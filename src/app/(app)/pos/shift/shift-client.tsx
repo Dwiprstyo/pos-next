@@ -204,7 +204,7 @@ export function ShiftClient({
             />
           </div>
           {actualCash ? (
-            <p className={variance === 0 ? "text-sm" : variance > 0 ? "text-sm text-destructive" : "text-sm text-status-occupied"}>
+            <p className={variance === 0 ? "text-sm" : variance > 0 ? "text-sm text-destructive" : "text-sm text-foreground"}>
               Selisih: {rupiah(Math.abs(variance))} {variance === 0 ? "(pas)" : variance > 0 ? "(kurang)" : "(lebih)"}
             </p>
           ) : null}

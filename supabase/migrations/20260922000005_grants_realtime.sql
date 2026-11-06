@@ -1,14 +1,8 @@
--- ============================================================
--- Function privileges & Realtime authorization
--- ============================================================
-
--- Auth hook
 grant usage on schema public to supabase_auth_admin;
 grant select on public.staff to supabase_auth_admin;
 grant execute on function public.custom_access_token_hook(jsonb) to supabase_auth_admin;
 revoke execute on function public.custom_access_token_hook(jsonb) from anon, authenticated, public;
 
--- ── Internal helpers: not callable through the API ─────────
 revoke execute on function public._audit(uuid, uuid, text, text, uuid, jsonb) from anon, authenticated, public;
 revoke execute on function public.recompute_order_totals(uuid) from anon, authenticated, public;
 revoke execute on function public.fill_order_item_denorm() from anon, authenticated, public;
@@ -16,14 +10,12 @@ revoke execute on function public.deduct_stock_on_payment() from anon, authentic
 revoke execute on function public.broadcast_order_item_change() from anon, authenticated, public;
 revoke execute on function public.broadcast_order_change() from anon, authenticated, public;
 
--- ── Privileged approval paths: service_role only ───────────
 revoke execute on function public.apply_order_discount(uuid, text, numeric, uuid) from anon, authenticated, public;
 grant execute on function public.apply_order_discount(uuid, text, numeric, uuid) to service_role;
 
 revoke execute on function public.void_order(uuid, text, uuid) from anon, authenticated, public;
 grant execute on function public.void_order(uuid, text, uuid) to service_role;
 
--- ── App RPCs: authenticated, role enforced inside ──────────
 revoke execute on function public.create_order(uuid, uuid, public.order_type, jsonb) from anon, public;
 grant execute on function public.create_order(uuid, uuid, public.order_type, jsonb) to authenticated;
 
@@ -63,11 +55,8 @@ grant execute on function public.top_selling_items(date, date, uuid, int) to aut
 revoke execute on function public.shift_summary(uuid) from anon, public;
 grant execute on function public.shift_summary(uuid) to authenticated;
 
--- ── Realtime: private KDS channel per outlet ───────────────
--- realtime.messages is owned by supabase_realtime_admin. On hosted Supabase the
--- `postgres` role can create policies on it; locally the migration may run
--- without that privilege, in which case supabase/realtime_policies.sql is
--- applied by `npm run db:setup` (see README).
+-- realtime.messages is owned by supabase_realtime_admin; local resets apply
+-- these policies via supabase/realtime_policies.sql (`npm run db:setup`).
 do $do$
 begin
   begin

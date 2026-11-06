@@ -1,16 +1,12 @@
--- ============================================================
 -- Seed data (local dev). PINs: owner 1111, manager 2222,
 -- cashier 3333, cashier2 4444, kitchen 5555, kitchen2 6666
--- ============================================================
 
--- ── Outlets ────────────────────────────────────────────────
 insert into public.outlets (id, name, address, tax_percent, service_charge_percent, discount_approval_threshold)
 values
-  ('aaaaaaaa-0000-0000-0000-000000000001', 'Warung Nusantara — Pusat', 'Jl. Merdeka No. 1, Jakarta', 10, 5, 50000),
-  ('aaaaaaaa-0000-0000-0000-000000000002', 'Warung Nusantara — Cabang', 'Jl. Sudirman No. 88, Bandung', 10, 0, 25000)
+  ('aaaaaaaa-0000-0000-0000-000000000001', 'Warung Nusantara: Pusat', 'Jl. Merdeka No. 1, Jakarta', 10, 5, 50000),
+  ('aaaaaaaa-0000-0000-0000-000000000002', 'Warung Nusantara: Cabang', 'Jl. Sudirman No. 88, Bandung', 10, 0, 25000)
 on conflict (id) do nothing;
 
--- ── Auth users + staff ─────────────────────────────────────
 do $$
 declare
   r record;
@@ -56,7 +52,6 @@ begin
 end;
 $$;
 
--- ── Dining tables ──────────────────────────────────────────
 insert into public.dining_tables (outlet_id, label)
 select 'aaaaaaaa-0000-0000-0000-000000000001', 'T' || g
 from generate_series(1, 8) g
@@ -67,7 +62,6 @@ select 'aaaaaaaa-0000-0000-0000-000000000002', 'T' || g
 from generate_series(1, 5) g
 on conflict (outlet_id, label) do nothing;
 
--- ── Menu categories ────────────────────────────────────────
 insert into public.menu_categories (id, outlet_id, name, station, sort_order) values
   ('c0000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'Makanan', 'kitchen', 1),
   ('c0000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Minuman', 'bar', 2),
@@ -76,7 +70,6 @@ insert into public.menu_categories (id, outlet_id, name, station, sort_order) va
   ('c0000000-0000-0000-0000-000000000005', 'aaaaaaaa-0000-0000-0000-000000000002', 'Minuman', 'bar', 2)
 on conflict (id) do nothing;
 
--- ── Menu items ─────────────────────────────────────────────
 insert into public.menu_items (id, outlet_id, category_id, name, base_price, is_available) values
   ('d0000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Nasi Goreng Spesial', 35000, true),
   ('d0000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'c0000000-0000-0000-0000-000000000001', 'Mie Goreng', 30000, true),
@@ -89,7 +82,6 @@ insert into public.menu_items (id, outlet_id, category_id, name, base_price, is_
   ('d0000000-0000-0000-0000-000000000009', 'aaaaaaaa-0000-0000-0000-000000000002', 'c0000000-0000-0000-0000-000000000005', 'Es Teh Manis', 8000, true)
 on conflict (id) do nothing;
 
--- ── Variant groups & options ───────────────────────────────
 insert into public.variant_groups (id, menu_item_id, name, is_required, min_select, max_select) values
   ('e0000000-0000-0000-0000-000000000001', 'd0000000-0000-0000-0000-000000000001', 'Level Pedas', true, 1, 1),
   ('e0000000-0000-0000-0000-000000000002', 'd0000000-0000-0000-0000-000000000002', 'Level Pedas', true, 1, 1),
@@ -114,7 +106,6 @@ insert into public.variant_options (id, variant_group_id, name, extra_price) val
   ('f0000000-0000-0000-0000-00000000000d', 'e0000000-0000-0000-0000-000000000005', 'Panas', 0)
 on conflict (id) do nothing;
 
--- ── Ingredients ────────────────────────────────────────────
 insert into public.ingredients (id, outlet_id, name, unit, current_stock, min_stock_alert) values
   ('a1000000-0000-0000-0000-000000000001', 'aaaaaaaa-0000-0000-0000-000000000001', 'Beras', 'gram', 50000, 10000),
   ('a1000000-0000-0000-0000-000000000002', 'aaaaaaaa-0000-0000-0000-000000000001', 'Telur', 'pcs', 120, 20),
@@ -129,7 +120,6 @@ insert into public.ingredients (id, outlet_id, name, unit, current_stock, min_st
   ('a1000000-0000-0000-0000-00000000000b', 'aaaaaaaa-0000-0000-0000-000000000001', 'Pisang', 'pcs', 50, 10)
 on conflict (id) do nothing;
 
--- ── Recipes (menu item -> ingredients) ─────────────────────
 insert into public.menu_item_ingredients (menu_item_id, ingredient_id, qty_required) values
   ('d0000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000001', 200),
   ('d0000000-0000-0000-0000-000000000001', 'a1000000-0000-0000-0000-000000000002', 1),

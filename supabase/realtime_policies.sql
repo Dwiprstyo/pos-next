@@ -29,9 +29,8 @@ with check (
   and realtime.topic() = 'kds:' || (auth.jwt() ->> 'outlet_id')
 );
 
--- Let the migration role manage these policies on subsequent local db resets.
--- On hosted Supabase this grant is unnecessary (and reserved-role protected),
--- so it is attempted best-effort only.
+-- Let the migration role manage these policies on later local resets. Hosted
+-- Supabase does not need this grant (and reserves the role).
 do $$
 begin
   grant supabase_realtime_admin to postgres;

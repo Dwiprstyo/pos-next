@@ -205,7 +205,7 @@ export function MenuAdminClient({
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-lg font-semibold">Menu — {outletName}</h1>
+          <h1 className="text-lg font-semibold">Menu: {outletName}</h1>
           <p className="text-sm text-muted-foreground">Kelola kategori, menu, varian, dan resep bahan.</p>
         </div>
         <div className="flex items-center gap-2">
@@ -215,7 +215,7 @@ export function MenuAdminClient({
               onValueChange={(value) => router.push(`/admin/menu?outlet=${value ?? ""}`)}
               items={outlets.map((outlet) => ({ value: outlet.id, label: outlet.name }))}
             >
-              <SelectTrigger className="w-52">
+              <SelectTrigger className="w-52" aria-label="Pilih outlet">
                 <SelectValue placeholder="Pilih outlet" />
               </SelectTrigger>
               <SelectContent>
@@ -258,6 +258,7 @@ export function MenuAdminClient({
               <Button
                 size="icon"
                 variant="ghost"
+                aria-label={`Edit kategori ${category.name}`}
                 onClick={() =>
                   setCategoryForm({
                     id: category.id,
@@ -267,10 +268,15 @@ export function MenuAdminClient({
                   })
                 }
               >
-                <Pencil className="size-4" />
+                <Pencil className="size-4" aria-hidden="true" />
               </Button>
-              <Button size="icon" variant="ghost" onClick={() => removeCategory(category.id)}>
-                <Trash2 className="size-4" />
+              <Button
+                size="icon"
+                variant="ghost"
+                aria-label={`Hapus kategori ${category.name}`}
+                onClick={() => removeCategory(category.id)}
+              >
+                <Trash2 className="size-4" aria-hidden="true" />
               </Button>
             </div>
           ))}
@@ -309,6 +315,7 @@ export function MenuAdminClient({
                     </TableCell>
                     <TableCell>
                       <Switch
+                        aria-label={`Tersedia: ${item.name}`}
                         checked={item.is_available}
                         onCheckedChange={async (checked) => {
                           const result = await toggleMenuItemAction(item.id, checked);
@@ -345,8 +352,9 @@ export function MenuAdminClient({
           </DialogHeader>
           <div className="space-y-3">
             <div className="space-y-1">
-              <Label>Nama</Label>
+              <Label htmlFor="category-name">Nama</Label>
               <Input
+                id="category-name"
                 value={categoryForm?.name ?? ""}
                 onChange={(event) =>
                   setCategoryForm((prev) => (prev ? { ...prev, name: event.target.value } : prev))
@@ -355,7 +363,7 @@ export function MenuAdminClient({
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
-                <Label>Station</Label>
+                <Label htmlFor="category-station">Station</Label>
                 <Select
                   value={categoryForm?.station ?? "kitchen"}
                   onValueChange={(value) =>
@@ -363,7 +371,7 @@ export function MenuAdminClient({
                   }
                   items={{ kitchen: "Kitchen", bar: "Bar" }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="category-station">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -373,8 +381,9 @@ export function MenuAdminClient({
                 </Select>
               </div>
               <div className="space-y-1">
-                <Label>Urutan</Label>
+                <Label htmlFor="category-sort-order">Urutan</Label>
                 <Input
+                  id="category-sort-order"
                   type="number"
                   value={categoryForm?.sortOrder ?? "0"}
                   onChange={(event) =>
@@ -406,8 +415,9 @@ export function MenuAdminClient({
             <div className="space-y-5">
               <div className="grid gap-3 sm:grid-cols-2">
                 <div className="space-y-1">
-                  <Label>Nama</Label>
+                  <Label htmlFor="menu-name">Nama</Label>
                   <Input
+                    id="menu-name"
                     value={itemForm.name}
                     onChange={(event) =>
                       setItemForm((prev) => (prev ? { ...prev, name: event.target.value } : prev))
@@ -415,7 +425,7 @@ export function MenuAdminClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Kategori</Label>
+                  <Label htmlFor="menu-category">Kategori</Label>
                   <Select
                     value={itemForm.categoryId ?? "none"}
                     onValueChange={(value) =>
@@ -430,7 +440,7 @@ export function MenuAdminClient({
                       ...categories.map((category) => ({ value: category.id, label: category.name })),
                     ]}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="menu-category">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -444,8 +454,9 @@ export function MenuAdminClient({
                   </Select>
                 </div>
                 <div className="space-y-1">
-                  <Label>Harga Dasar</Label>
+                  <Label htmlFor="menu-base-price">Harga Dasar</Label>
                   <Input
+                    id="menu-base-price"
                     type="number"
                     min={0}
                     value={itemForm.basePrice}
@@ -456,12 +467,13 @@ export function MenuAdminClient({
                 </div>
                 <div className="flex items-center gap-2 pt-6">
                   <Switch
+                    id="menu-available"
                     checked={itemForm.isAvailable}
                     onCheckedChange={(checked) =>
                       setItemForm((prev) => (prev ? { ...prev, isAvailable: checked } : prev))
                     }
                   />
-                  <Label>Tersedia</Label>
+                  <Label htmlFor="menu-available">Tersedia</Label>
                 </div>
               </div>
 
@@ -501,6 +513,7 @@ export function MenuAdminClient({
                     <div className="grid gap-2 sm:grid-cols-[1fr_auto_auto_auto]">
                       <Input
                         placeholder="Nama grup (cth. Level Pedas)"
+                        aria-label={`Nama grup varian ${groupIndex + 1}`}
                         value={group.name}
                         onChange={(event) =>
                           setItemForm((prev) => {
@@ -515,6 +528,7 @@ export function MenuAdminClient({
                         type="number"
                         className="w-20"
                         title="min select"
+                        aria-label={`Minimal pilih grup ${groupIndex + 1}`}
                         value={group.min_select}
                         onChange={(event) =>
                           setItemForm((prev) => {
@@ -529,6 +543,7 @@ export function MenuAdminClient({
                         type="number"
                         className="w-20"
                         title="max select"
+                        aria-label={`Maksimal pilih grup ${groupIndex + 1}`}
                         value={group.max_select}
                         onChange={(event) =>
                           setItemForm((prev) => {
@@ -542,6 +557,7 @@ export function MenuAdminClient({
                       <Button
                         size="icon"
                         variant="ghost"
+                        aria-label={`Hapus grup varian ${group.name || groupIndex + 1}`}
                         onClick={() =>
                           setItemForm((prev) =>
                             prev
@@ -553,12 +569,13 @@ export function MenuAdminClient({
                           )
                         }
                       >
-                        <Trash2 className="size-4" />
+                        <Trash2 className="size-4" aria-hidden="true" />
                       </Button>
                     </div>
 
                     <div className="flex items-center gap-2">
                       <Switch
+                        aria-label={`Wajib dipilih grup ${groupIndex + 1}`}
                         checked={group.is_required}
                         onCheckedChange={(checked) =>
                           setItemForm((prev) => {
@@ -577,6 +594,7 @@ export function MenuAdminClient({
                         <div key={optionIndex} className="flex gap-2">
                           <Input
                             placeholder="Nama opsi"
+                            aria-label={`Nama opsi ${optionIndex + 1} grup ${groupIndex + 1}`}
                             value={option.name}
                             onChange={(event) =>
                               setItemForm((prev) => {
@@ -593,6 +611,7 @@ export function MenuAdminClient({
                             type="number"
                             className="w-28"
                             placeholder="+Rp"
+                            aria-label={`Tambahan harga opsi ${optionIndex + 1} grup ${groupIndex + 1}`}
                             value={option.extra_price}
                             onChange={(event) =>
                               setItemForm((prev) => {
@@ -608,6 +627,7 @@ export function MenuAdminClient({
                           <Button
                             size="icon"
                             variant="ghost"
+                            aria-label={`Hapus opsi ${option.name || optionIndex + 1}`}
                             onClick={() =>
                               setItemForm((prev) => {
                                 if (!prev) return prev;
@@ -620,7 +640,7 @@ export function MenuAdminClient({
                               })
                             }
                           >
-                            <Trash2 className="size-4" />
+                            <Trash2 className="size-4" aria-hidden="true" />
                           </Button>
                         </div>
                       ))}
@@ -687,7 +707,7 @@ export function MenuAdminClient({
                         })),
                       ]}
                     >
-                      <SelectTrigger className="flex-1">
+                      <SelectTrigger className="flex-1" aria-label={`Bahan resep ${index + 1}`}>
                         <SelectValue placeholder="Pilih bahan" />
                       </SelectTrigger>
                       <SelectContent>
@@ -703,6 +723,7 @@ export function MenuAdminClient({
                       type="number"
                       className="w-32"
                       placeholder="qty"
+                      aria-label={`Jumlah bahan resep ${index + 1}`}
                       value={row.qtyRequired}
                       onChange={(event) =>
                         setItemForm((prev) => {
@@ -716,13 +737,14 @@ export function MenuAdminClient({
                     <Button
                       size="icon"
                       variant="ghost"
+                      aria-label={`Hapus bahan resep ${index + 1}`}
                       onClick={() =>
                         setItemForm((prev) =>
                           prev ? { ...prev, recipe: prev.recipe.filter((_, i) => i !== index) } : prev,
                         )
                       }
                     >
-                      <Trash2 className="size-4" />
+                      <Trash2 className="size-4" aria-hidden="true" />
                     </Button>
                   </div>
                 ))}

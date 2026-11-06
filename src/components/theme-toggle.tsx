@@ -20,10 +20,10 @@ export function ThemeToggle({ className }: { className?: string }) {
       variant="outline"
       size="icon"
       className={className}
-      aria-label="Ganti tema"
+      aria-label={isDark ? "Aktifkan mode terang" : "Aktifkan mode gelap"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
     >
-      {isDark ? <Sun className="size-4" /> : <Moon className="size-4" />}
+      {isDark ? <Sun className="size-4" aria-hidden="true" /> : <Moon className="size-4" aria-hidden="true" />}
     </Button>
   );
 }

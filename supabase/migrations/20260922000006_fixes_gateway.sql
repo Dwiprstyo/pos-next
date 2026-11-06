@@ -1,7 +1,3 @@
--- ============================================================
--- Fixes & gateway settlement RPC
--- ============================================================
-
 -- Owners (is_multi_outlet) have outlet_id = null; they must still pass outlet checks.
 create or replace function public.can_access_outlet(p_outlet_id uuid)
 returns boolean

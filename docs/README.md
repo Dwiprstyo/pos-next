@@ -22,7 +22,7 @@ Dokumentasi lengkap aplikasi multi-outlet POS + Kitchen Display System.
 - **Stack**: Next.js 15 (App Router, RSC + Server Actions), Supabase (Postgres + Auth + Realtime), Tailwind v4 + shadcn/ui (Base UI), Zustand, Dexie.
 - **Role**: `cashier`, `kitchen`, `manager` (owner = manager `is_multi_outlet`).
 - **Isolasi data**: RLS per outlet, digerakkan claim JWT `outlet_id` / `app_role` / `staff_id`.
-- **Tulis data**: selalu lewat RPC `security definer` (`create_order`, `pay_order`, dst) — client tidak pernah menulis harga.
+- **Tulis data**: selalu lewat RPC `security definer` (`create_order`, `pay_order`, dst). Client tidak pernah menulis harga.
 - **Realtime**: trigger Postgres broadcast payload minimal (tanpa harga) ke channel privat `kds:{outlet_id}`.
 - **Pembayaran**: tunai selalu tersedia; QRIS/e-wallet via Midtrans kalau `MIDTRANS_SERVER_KEY` diisi.
 

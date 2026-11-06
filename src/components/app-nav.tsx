@@ -76,7 +76,7 @@ export function AppNav({
             href={item.href}
             onClick={() => setOpen(false)}
             className={cn(
-              "flex items-center gap-3 rounded-md px-3 py-2.5 text-[15px] font-medium transition-colors",
+              "flex items-center gap-3 rounded-md px-3 py-3 text-[15px] font-medium transition-colors",
               active
                 ? "bg-primary text-primary-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
@@ -125,8 +125,11 @@ export function AppNav({
       <header className="flex items-center justify-between border-b bg-card px-4 py-3 md:hidden">
         <div className="flex items-center gap-2">
           <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger className={buttonVariants({ variant: "outline", size: "icon" })}>
-              <Menu className="size-5" />
+            <SheetTrigger
+              aria-label="Buka menu"
+              className={buttonVariants({ variant: "outline", size: "icon" })}
+            >
+              <Menu className="size-5" aria-hidden="true" />
             </SheetTrigger>
             <SheetContent side="left" className="w-64 p-4">
               <SheetTitle className="mb-4">Menu</SheetTitle>
@@ -137,8 +140,8 @@ export function AppNav({
         </div>
         <div className="flex items-center gap-2">
           <form action={logout}>
-            <Button type="submit" variant="ghost" size="icon">
-              <LogOut className="size-5" />
+            <Button type="submit" variant="ghost" size="icon" aria-label="Keluar">
+              <LogOut className="size-5" aria-hidden="true" />
             </Button>
           </form>
           <ThemeToggle />

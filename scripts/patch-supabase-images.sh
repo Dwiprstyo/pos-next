@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
-# Apple Silicon workaround: the arm64 Supabase images for storage-api, postgres-meta
-# and kong ship a 0-byte docker-entrypoint.sh, which makes `supabase start` fail with
-# "exec /usr/local/bin/docker-entrypoint.sh: exec format error".
-#
-# This script extracts the real entrypoint from the amd64 image and rebuilds the
-# local arm64 tag. Run once before `npm run db:start`.
+# Apple Silicon workaround: arm64 Supabase images ship a 0-byte docker-entrypoint.sh,
+# so `supabase start` fails with "exec format error". Rebuild the tags from amd64.
 set -euo pipefail
 
 WORKDIR="$(mktemp -d)"

@@ -188,6 +188,13 @@ export default async function AdminReportsPage({
                     <TableCell className="text-right">{rupiah(order.total)}</TableCell>
                   </TableRow>
                 ))}
+                {(recentResult.data ?? []).length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={4} className="py-8 text-center text-muted-foreground">
+                      Belum ada transaksi.
+                    </TableCell>
+                  </TableRow>
+                ) : null}
               </TableBody>
             </Table>
           </CardContent>

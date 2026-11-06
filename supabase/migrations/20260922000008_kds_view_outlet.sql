@@ -1,6 +1,4 @@
--- ============================================================
 -- KDS view: expose outlet_id so boards can filter per outlet
--- ============================================================
 
 drop view if exists public.kds_order_items_view;
 

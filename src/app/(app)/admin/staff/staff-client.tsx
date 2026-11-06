@@ -192,6 +192,7 @@ export function StaffClient({
                       <Button
                         size="icon"
                         variant="ghost"
+                        aria-label={`Edit ${member.full_name}`}
                         onClick={() =>
                           setEditForm({
                             id: member.id,
@@ -201,19 +202,27 @@ export function StaffClient({
                           })
                         }
                       >
-                        <Pencil className="size-4" />
+                        <Pencil className="size-4" aria-hidden="true" />
                       </Button>
                       <Button
                         size="icon"
                         variant="ghost"
+                        aria-label={`Reset PIN ${member.full_name}`}
                         onClick={() => setPinForm({ id: member.id, name: member.full_name, pin: "" })}
                       >
-                        <KeyRound className="size-4" />
+                        <KeyRound className="size-4" aria-hidden="true" />
                       </Button>
                     </div>
                   </TableCell>
                 </TableRow>
               ))}
+              {staff.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                    Belum ada staff.
+                  </TableCell>
+                </TableRow>
+              ) : null}
             </TableBody>
           </Table>
         </CardContent>
@@ -227,8 +236,9 @@ export function StaffClient({
           {createForm ? (
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label>Nama Lengkap</Label>
+                <Label htmlFor="staff-create-name">Nama Lengkap</Label>
                 <Input
+                  id="staff-create-name"
                   value={createForm.fullName}
                   onChange={(event) =>
                     setCreateForm((prev) => (prev ? { ...prev, fullName: event.target.value } : prev))
@@ -237,8 +247,9 @@ export function StaffClient({
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-1">
-                  <Label>Kode Staff</Label>
+                  <Label htmlFor="staff-create-code">Kode Staff</Label>
                   <Input
+                    id="staff-create-code"
                     value={createForm.staffCode}
                     onChange={(event) =>
                       setCreateForm((prev) =>
@@ -249,7 +260,7 @@ export function StaffClient({
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Role</Label>
+                  <Label htmlFor="staff-create-role">Role</Label>
                   <Select
                     value={createForm.role}
                     onValueChange={(value) =>
@@ -257,7 +268,7 @@ export function StaffClient({
                     }
                     items={{ cashier: "Kasir", kitchen: "Dapur", manager: "Manager" }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="staff-create-role">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -270,7 +281,7 @@ export function StaffClient({
               </div>
               {isMultiOutlet ? (
                 <div className="space-y-1">
-                  <Label>Outlet</Label>
+                  <Label htmlFor="staff-create-outlet">Outlet</Label>
                   <Select
                     value={createForm.outletId}
                     onValueChange={(value) =>
@@ -278,7 +289,7 @@ export function StaffClient({
                     }
                     items={outlets.map((outlet) => ({ value: outlet.id, label: outlet.name }))}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="staff-create-outlet">
                       <SelectValue placeholder="Pilih outlet" />
                     </SelectTrigger>
                     <SelectContent>
@@ -292,8 +303,9 @@ export function StaffClient({
                 </div>
               ) : null}
               <div className="space-y-1">
-                <Label>PIN (min. 4 digit)</Label>
+                <Label htmlFor="staff-create-pin">PIN (min. 4 digit)</Label>
                 <Input
+                  id="staff-create-pin"
                   type="password"
                   inputMode="numeric"
                   value={createForm.pin}
@@ -324,8 +336,9 @@ export function StaffClient({
           {editForm ? (
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label>Nama Lengkap</Label>
+                <Label htmlFor="staff-edit-name">Nama Lengkap</Label>
                 <Input
+                  id="staff-edit-name"
                   value={editForm.fullName}
                   onChange={(event) =>
                     setEditForm((prev) => (prev ? { ...prev, fullName: event.target.value } : prev))
@@ -333,7 +346,7 @@ export function StaffClient({
                 />
               </div>
               <div className="space-y-1">
-                <Label>Role</Label>
+                <Label htmlFor="staff-edit-role">Role</Label>
                 <Select
                   value={editForm.role}
                   onValueChange={(value) =>
@@ -341,7 +354,7 @@ export function StaffClient({
                   }
                   items={{ cashier: "Kasir", kitchen: "Dapur", manager: "Manager" }}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger id="staff-edit-role">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -353,13 +366,14 @@ export function StaffClient({
               </div>
               <div className="flex items-center gap-2">
                 <Switch
+                  id="staff-edit-active"
                   checked={editForm.isActive}
                   disabled={editForm.id === currentStaffId}
                   onCheckedChange={(checked) =>
                     setEditForm((prev) => (prev ? { ...prev, isActive: checked } : prev))
                   }
                 />
-                <Label>Aktif</Label>
+                <Label htmlFor="staff-edit-active">Aktif</Label>
               </div>
             </div>
           ) : null}
@@ -377,11 +391,12 @@ export function StaffClient({
       <Dialog open={Boolean(pinForm)} onOpenChange={(open) => !open && setPinForm(null)}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Reset PIN — {pinForm?.name}</DialogTitle>
+            <DialogTitle>Reset PIN: {pinForm?.name}</DialogTitle>
           </DialogHeader>
           <div className="space-y-1">
-            <Label>PIN Baru</Label>
+            <Label htmlFor="staff-reset-pin">PIN Baru</Label>
             <Input
+              id="staff-reset-pin"
               type="password"
               inputMode="numeric"
               value={pinForm?.pin ?? ""}

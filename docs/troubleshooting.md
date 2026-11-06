@@ -34,7 +34,7 @@ Policy `realtime.messages` belum ada.
 npm run db:setup
 ```
 
-Lalu pastikan client subscribe memakai JWT user (bukan anon key) — board sudah memanggil `supabase.realtime.setAuth(session.access_token)`.
+Lalu pastikan client subscribe memakai JWT user (bukan anon key). Board sudah memanggil `supabase.realtime.setAuth(session.access_token)`.
 
 ### Laporan kosong
 

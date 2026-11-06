@@ -1,10 +1,10 @@
-# POS & KDS — Multi-Outlet
+# POS & KDS: Multi-Outlet
 
 Web-based Point of Sale + Kitchen Display System. Next.js 15 (App Router) on top of Supabase (Postgres, Auth, Realtime, Storage).
 
 Implements the scope in [`prd-pos-kds.md`](./prd-pos-kds.md): PIN login with JWT claims, row-level-security outlet isolation, POS with cart/variants/discount approval, shifts & cash reconciliation, realtime KDS state machine, automatic stock deduction, and manager reporting.
 
-📚 **Dokumentasi lengkap ada di [`docs/`](./docs/README.md)** (arsitektur, database, auth, POS, KDS, pembayaran, admin, operasional, testing, troubleshooting).
+**Dokumentasi lengkap ada di [`docs/`](./docs/README.md)** (arsitektur, database, auth, POS, KDS, pembayaran, admin, operasional, testing, troubleshooting).
 
 ## Stack
 
@@ -38,7 +38,7 @@ Open http://localhost:3000.
 
 | Role | Outlet | Kode Staff | PIN |
 |---|---|---|---|
-| Owner (all outlets) | — | `OWN` | `1111` |
+| Owner (all outlets) | Semua | `OWN` | `1111` |
 | Manager | Pusat | `MGR` | `2222` |
 | Kasir | Pusat | `KSR1` | `3333` |
 | Kasir | Cabang | `KSR2` | `4444` |
@@ -103,7 +103,7 @@ When the POS loses connectivity, `create_order` calls are queued in IndexedDB (D
 - Default theme is light with a toggle in the nav/KDS header.
 - Tables are optional: dine-in orders can run without one ("Tanpa meja").
 - Cash is the default payment method.
-- `/pos/orders` lists all unpaid orders (tambahkan item atau bayar) — works for takeaway/no-table orders too.
+- `/pos/orders` lists all unpaid orders (tambahkan item atau bayar). Works for takeaway/no-table orders too.
 - Owner (multi-outlet) only sees back-office menus; POS/KDS are hidden from the nav.
 - Small phones show a "rotate to landscape" hint on POS/KDS.
 

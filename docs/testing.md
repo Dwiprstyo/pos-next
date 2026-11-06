@@ -4,7 +4,7 @@ Tiga lapis pengujian, semuanya memakai Supabase lokal.
 
 ## 1. Smoke test backend (`npm run test:smoke`)
 
-`scripts/smoke-test.mjs` — 31 assertion langsung ke RPC/RLS:
+`scripts/smoke-test.mjs` menjalankan assertion langsung ke RPC/RLS:
 
 - Login `generateLink + verifyOtp` dan claim JWT.
 - Buka shift.
@@ -26,7 +26,7 @@ npm run test:smoke
 
 ## 2. E2E browser (`npm run test:e2e`)
 
-`scripts/e2e-test.mjs` (Playwright + Chrome terpasang) — 17 assertion alur UI:
+`scripts/e2e-test.mjs` (Playwright + Chrome terpasang) menguji alur UI:
 
 1. Kasir buka shift.
 2. Tambah 2 item (satu dengan varian), pilih meja, checkout, bayar tunai.
@@ -42,7 +42,7 @@ npm run test:e2e
 
 ## 3. Realtime (`npm run test:realtime`)
 
-`scripts/realtime-test.mjs` — memastikan broadcast privat sampai ke board **tanpa interaksi**:
+`scripts/realtime-test.mjs` memastikan broadcast privat sampai ke board **tanpa interaksi**:
 
 - Board KDS dibuka di browser.
 - Order dibuat lewat API (node).

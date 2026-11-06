@@ -21,7 +21,7 @@ Supabase Auth tidak punya konsep "outlet + PIN", jadi:
 6. **Audit**: `auth.login`, `auth.pin_failed` masuk `audit_logs`.
 7. **Redirect** sesuai role (`defaultHomeFor`).
 
-Session berlaku 12 jam (`jwt_expiry = 43200` di `supabase/config.toml`) — sepanjang shift.
+Session berlaku 12 jam (`jwt_expiry = 43200` di `supabase/config.toml`), yaitu sepanjang shift.
 
 ## Auth Hook
 
@@ -61,17 +61,17 @@ Registrasi hook:
 
 | Resource | cashier | kitchen | manager | owner |
 |---|---|---|---|---|
-| `menu_items` (baca) | ✅ | ❌ | ✅ | ✅ semua |
-| `orders` (baca) | ✅ outlet | ❌ | ✅ outlet | ✅ semua |
-| `payments` (baca) | ✅ outlet | ❌ | ✅ outlet | ✅ semua |
-| `kds_order_items_view` | ❌ | ✅ | ✅ | ✅ |
-| `set_kitchen_status` | ❌ | ✅ | ✅ | ✅ |
-| `create_order` / `pay_order` | ✅ | ❌ | ✅ | ⚠️ butuh outlet |
-| `apply_order_discount` | ✅ (batas) | ❌ | ✅ | ✅ |
-| `void_order` | ❌ (butuh PIN manager) | ❌ | ✅ | ✅ |
-| `adjust_stock`, CRUD menu/staff | ❌ | ❌ | ✅ | ✅ |
-| `outlets` CRUD | ❌ | ❌ | ❌ | ✅ |
-| Laporan (`daily_sales`, dll) | ❌ | ❌ | ✅ | ✅ semua |
+| `menu_items` (baca) | Ya | Tidak | Ya | Ya (semua) |
+| `orders` (baca) | Ya (outlet) | Tidak | Ya (outlet) | Ya (semua) |
+| `payments` (baca) | Ya (outlet) | Tidak | Ya (outlet) | Ya (semua) |
+| `kds_order_items_view` | Tidak | Ya | Ya | Ya |
+| `set_kitchen_status` | Tidak | Ya | Ya | Ya |
+| `create_order` / `pay_order` | Ya | Tidak | Ya | Perlu outlet |
+| `apply_order_discount` | Ya (batas) | Tidak | Ya | Ya |
+| `void_order` | Tidak (butuh PIN manager) | Tidak | Ya | Ya |
+| `adjust_stock`, CRUD menu/staff | Tidak | Tidak | Ya | Ya |
+| `outlets` CRUD | Tidak | Tidak | Tidak | Ya |
+| Laporan (`daily_sales`, dll) | Tidak | Tidak | Ya | Ya (semua) |
 
 RLS **bukan** satu-satunya lapisan:
 

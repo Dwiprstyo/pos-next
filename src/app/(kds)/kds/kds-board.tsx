@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, BellOff, ChefHat, Loader2, LogOut, Volume2 } from "lucide-react";
+import { Bell, BellOff, Check, ChefHat, Loader2, LogOut, Volume2 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -75,7 +75,7 @@ export function KdsBoard({
       osc.start();
       osc.stop(ctx.currentTime + 0.3);
     } catch {
-      // audio not available
+      // Audio is optional; the board still works if the browser blocks it.
     }
   }, []);
 
@@ -217,7 +217,7 @@ export function KdsBoard({
         audioCtxRef.current = ctx;
         void ctx.resume();
       } catch {
-        // ignore
+        // The toggle still updates when the browser blocks audio.
       }
     }
     const next = !soundEnabled;
@@ -237,22 +237,35 @@ export function KdsBoard({
             <h1 className="text-lg font-semibold">Kitchen Display</h1>
             <p className="text-xs text-muted-foreground">
               {outletName ?? "Semua outlet"} • {staffName} •{" "}
-              {connected ? (
-                <span className="text-status-empty">realtime</span>
-              ) : (
-                <span className="text-status-unpaid">polling fallback</span>
-              )}
+              <span className="inline-flex items-center gap-1">
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "size-2 rounded-full",
+                    connected ? "bg-status-empty" : "bg-status-unpaid",
+                  )}
+                />
+                {connected ? "realtime" : "polling fallback"}
+              </span>
             </p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant={soundEnabled ? "default" : "outline"} size="sm" onClick={toggleSound}>
-            {soundEnabled ? <Volume2 className="size-4" /> : <BellOff className="size-4" />}
+          <Button
+            variant={soundEnabled ? "default" : "outline"}
+            aria-label={soundEnabled ? "Matikan suara notifikasi" : "Aktifkan suara notifikasi"}
+            onClick={toggleSound}
+          >
+            {soundEnabled ? (
+              <Volume2 className="size-4" aria-hidden="true" />
+            ) : (
+              <BellOff className="size-4" aria-hidden="true" />
+            )}
             <span className="hidden sm:inline">{soundEnabled ? "Suara Aktif" : "Suara Mati"}</span>
           </Button>
           <form action={logout}>
-            <Button type="submit" variant="outline" size="sm">
-              <LogOut className="size-4" />
+            <Button type="submit" variant="outline">
+              <LogOut className="size-4" aria-hidden="true" />
               Keluar
             </Button>
           </form>
@@ -282,10 +295,9 @@ export function KdsBoard({
                 return (
                   <article
                     key={group.orderId}
-                    onClick={() => acknowledge(group.orderItems.map((item) => item.id))}
                     className={cn(
                       "rounded-lg border-2 bg-card p-3 shadow-sm",
-                      hasNew ? "animate-pulse border-kitchen-new" : "border-border",
+                      hasNew ? "animate-pulse border-kitchen-new motion-reduce:animate-none" : "border-border",
                     )}
                   >
                     <header className="mb-2 flex items-center justify-between">
@@ -299,7 +311,20 @@ export function KdsBoard({
                               : "Takeaway"}
                         </Badge>
                       </div>
-                      <span className="text-xs text-muted-foreground">{elapsedLabel(first.order_created_at, now)}</span>
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground">{elapsedLabel(first.order_created_at, now)}</span>
+                        {hasNew ? (
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Tandai item baru sudah dilihat"
+                            onClick={() => acknowledge(group.orderItems.map((item) => item.id))}
+                          >
+                            <Check className="size-4" aria-hidden="true" />
+                          </Button>
+                        ) : null}
+                      </div>
                     </header>
 
                     <div className="space-y-3">
@@ -321,7 +346,7 @@ export function KdsBoard({
                                   <p className="text-sm text-muted-foreground">{item.variants}</p>
                                 ) : null}
                                 {item.notes ? (
-                                  <p className="text-sm font-medium text-kitchen-cooking">{item.notes}</p>
+                                  <p className="text-sm font-medium text-foreground">{item.notes}</p>
                                 ) : null}
                               </div>
                             </div>

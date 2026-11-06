@@ -44,9 +44,9 @@ MIDTRANS_IS_PRODUCTION=false
 
 ### Yang diimplementasikan
 
-- **QRIS** — Core API `POST /v2/charge` `payment_type: "qris"`, `acquirer: "gopay"`; QR diambil dari `actions[name=generate-qr-code].url`.
-- **E-wallet** — `payment_type: "gopay"` dengan callback URL; deeplink dari `actions[name=deeplink-redirect]`.
-- **Kartu** — belum didukung (Core API butuh card token/3DS dari client).
+- **QRIS**: Core API `POST /v2/charge` `payment_type: "qris"`, `acquirer: "gopay"`; QR diambil dari `actions[name=generate-qr-code].url`.
+- **E-wallet**: `payment_type: "gopay"` dengan callback URL; deeplink dari `actions[name=deeplink-redirect]`.
+- **Kartu**: belum didukung (Core API butuh card token/3DS dari client).
 
 ### Alur pending
 

@@ -143,6 +143,13 @@ export function OutletsClient({ outlets }: { outlets: Outlet[] }) {
                   </TableCell>
                 </TableRow>
               ))}
+              {outlets.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={6} className="py-8 text-center text-muted-foreground">
+                    Belum ada outlet.
+                  </TableCell>
+                </TableRow>
+              ) : null}
             </TableBody>
           </Table>
         </CardContent>
@@ -156,23 +163,26 @@ export function OutletsClient({ outlets }: { outlets: Outlet[] }) {
           {form ? (
             <div className="space-y-3">
               <div className="space-y-1">
-                <Label>Nama</Label>
+                <Label htmlFor="outlet-name">Nama</Label>
                 <Input
+                  id="outlet-name"
                   value={form.name}
                   onChange={(event) => setForm((prev) => (prev ? { ...prev, name: event.target.value } : prev))}
                 />
               </div>
               <div className="space-y-1">
-                <Label>Alamat</Label>
+                <Label htmlFor="outlet-address">Alamat</Label>
                 <Input
+                  id="outlet-address"
                   value={form.address}
                   onChange={(event) => setForm((prev) => (prev ? { ...prev, address: event.target.value } : prev))}
                 />
               </div>
               <div className="grid grid-cols-3 gap-3">
                 <div className="space-y-1">
-                  <Label>Pajak %</Label>
+                  <Label htmlFor="outlet-tax">Pajak %</Label>
                   <Input
+                    id="outlet-tax"
                     type="number"
                     value={form.taxPercent}
                     onChange={(event) =>
@@ -181,8 +191,9 @@ export function OutletsClient({ outlets }: { outlets: Outlet[] }) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Service %</Label>
+                  <Label htmlFor="outlet-service">Service %</Label>
                   <Input
+                    id="outlet-service"
                     type="number"
                     value={form.serviceChargePercent}
                     onChange={(event) =>
@@ -191,8 +202,9 @@ export function OutletsClient({ outlets }: { outlets: Outlet[] }) {
                   />
                 </div>
                 <div className="space-y-1">
-                  <Label>Batas Diskon</Label>
+                  <Label htmlFor="outlet-discount">Batas Diskon</Label>
                   <Input
+                    id="outlet-discount"
                     type="number"
                     value={form.discountApprovalThreshold}
                     onChange={(event) =>
@@ -205,10 +217,11 @@ export function OutletsClient({ outlets }: { outlets: Outlet[] }) {
               </div>
               <div className="flex items-center gap-2">
                 <Switch
+                  id="outlet-active"
                   checked={form.isActive}
                   onCheckedChange={(checked) => setForm((prev) => (prev ? { ...prev, isActive: checked } : prev))}
                 />
-                <Label>Aktif</Label>
+                <Label htmlFor="outlet-active">Aktif</Label>
               </div>
             </div>
           ) : null}

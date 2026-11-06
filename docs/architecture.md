@@ -26,7 +26,7 @@
 2. **Satu transaksi per aksi bisnis.** Order + item + varian dibuat atomik lewat `create_order`; pembayaran + ubah status lewat `pay_order`; tidak ada multi-step write dari client.
 3. **RLS bukan sekadar UI.** Kitchen tidak punya akses `SELECT` ke `orders`/`payments`; hanya view `kds_order_items_view` yang bebas harga.
 4. **Idempotent by default.** `orders.client_id`, `payments.idempotency_key`, dan `payments.reference_no` unik → retry aman (offline sync, webhook replay).
-5. **Realtime minim payload.** Broadcast hanya berisi id, nama menu, qty, catatan, status, label meja — tanpa harga/total.
+5. **Realtime minim payload.** Broadcast hanya berisi id, nama menu, qty, catatan, status, label meja, tanpa harga/total.
 6. **Graceful degradation.** Tanpa Midtrans → hanya tunai. Tanpa websocket → polling 5 detik. Tanpa internet → antrean IndexedDB.
 
 ## Struktur folder
@@ -51,7 +51,7 @@ src/
 ├─ stores/cart.ts            # Zustand cart (persist)
 └─ middleware.ts
 supabase/
-├─ migrations/               # 7 migrasi berurutan
+├─ migrations/               # 8 migrasi berurutan
 ├─ seed.sql                  # data demo (lokal)
 └─ realtime_policies.sql     # policy channel privat KDS
 scripts/                     # setup DB, patch Docker, test

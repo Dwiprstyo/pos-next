@@ -1,9 +1,5 @@
--- ============================================================
--- Owner login fix, optional table, gateway payment states
--- ============================================================
-
--- ── 1. Auth hook: jsonb_set(..., NULL) nulls the whole claims object.
---       Owner has outlet_id = null, so coalesce to JSON null.
+-- Auth hook: jsonb_set(..., NULL) nulls the whole claims object.
+-- Owner has outlet_id = null, so coalesce to JSON null.
 create or replace function public.custom_access_token_hook(event jsonb)
 returns jsonb
 language plpgsql
@@ -43,7 +39,6 @@ $$;
 grant execute on function public.custom_access_token_hook(jsonb) to supabase_auth_admin;
 revoke execute on function public.custom_access_token_hook(jsonb) from anon, authenticated, public;
 
--- ── 2. Table is optional for every order type ──────────────
 create or replace function public.create_order(
   p_client_id uuid,
   p_table_id uuid,
@@ -210,7 +205,6 @@ begin
 end;
 $$;
 
--- ── 3. Payments: pending gateway state ─────────────────────
 create type public.payment_status as enum ('pending','paid','failed');
 
 alter table public.payments

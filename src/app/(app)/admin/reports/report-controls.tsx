@@ -55,16 +55,28 @@ export function ReportControls({
   return (
     <div className="flex flex-wrap items-end gap-2">
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Dari</label>
-        <Input type="date" defaultValue={from} onChange={(event) => updateParam("from", event.target.value)} className="w-36" />
+        <label htmlFor="report-from" className="text-xs text-muted-foreground">Dari</label>
+        <Input
+          id="report-from"
+          type="date"
+          defaultValue={from}
+          onChange={(event) => updateParam("from", event.target.value)}
+          className="w-36"
+        />
       </div>
       <div className="space-y-1">
-        <label className="text-xs text-muted-foreground">Sampai</label>
-        <Input type="date" defaultValue={to} onChange={(event) => updateParam("to", event.target.value)} className="w-36" />
+        <label htmlFor="report-to" className="text-xs text-muted-foreground">Sampai</label>
+        <Input
+          id="report-to"
+          type="date"
+          defaultValue={to}
+          onChange={(event) => updateParam("to", event.target.value)}
+          className="w-36"
+        />
       </div>
       {isMultiOutlet ? (
         <div className="space-y-1">
-          <label className="text-xs text-muted-foreground">Outlet</label>
+          <label htmlFor="report-outlet" className="text-xs text-muted-foreground">Outlet</label>
           <Select
             value={outletFilter ?? "all"}
             onValueChange={(value) => updateParam("outlet", value ?? "all")}
@@ -73,7 +85,7 @@ export function ReportControls({
               ...outlets.map((outlet) => ({ value: outlet.id, label: outlet.name })),
             ]}
           >
-            <SelectTrigger className="w-48">
+            <SelectTrigger id="report-outlet" className="w-48">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
